@@ -9,6 +9,8 @@ import { useNavigate } from 'react-router';
 import { useState } from 'react';
 import Popup from '../common/Popup';
 import { ErrorMessage } from '../signup/SingupForm';
+import { useDispatch } from 'react-redux';
+import { setLogIn } from '../../store/loginInfor';
 
 export default function LoginForm() {
   const [showPopup, setShowPopup] = useState(false);
@@ -21,17 +23,21 @@ export default function LoginForm() {
     formState: { errors },
   } = useForm();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const onSubmit = async (data) => {
     console.log(getValues());
     try {
       await sendLoginInfo(data);
       navigate('/');
+      dispatch(setLogIn({ login: true }));
     } catch {
       setShowPopup(true);
       setMessage(LoginConstant.ERROR_MESSAGE.fail);
     }
   };
+
+  console.log('render');
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -63,10 +69,12 @@ export default function LoginForm() {
           onClick={() => setValue('password', '')}
         />
       </InputBox>
-      {errors.loginId && <ErrorMessage>{errors.loginId.message}</ErrorMessage>}
-      {errors.password && (
-        <ErrorMessage>{errors.password.message}</ErrorMessage>
-      )}
+      {(errors.loginId && (
+        <ErrorMessage>{errors.loginId.message}</ErrorMessage>
+      )) ||
+        (errors.password && (
+          <ErrorMessage>{errors.password.message}</ErrorMessage>
+        ))}
       <Button text="로그인" />
       {showPopup && <Popup message={message} show={setShowPopup} />}
     </form>
