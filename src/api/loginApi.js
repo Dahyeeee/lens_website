@@ -24,10 +24,12 @@ export const useSendLogin = (loginInfor) =>
 
 const sendLogout = () => axios.get('/logout', { headers: header });
 
-const getUserInfor = () =>
-  axios.get('/api/v1/user/me', {
+export const getUserInfor = async () => {
+  const data = await axios.get('/api/v1/user/me', {
     headers: header,
   });
+  return data.data.data;
+};
 
 export const useGetUserInfor = () =>
   useQuery('loginInfor', getUserInfor, {
